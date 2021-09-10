@@ -13,47 +13,45 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-    <script>
-        let row;
-        let seat;
-        let rowAndSeat;
-
-        function loadingConfirmPaymentPage() {
-            rowAndSeat = window.location.href.split("?")[1].split("=")[1];
-            row = Math.trunc(rowAndSeat / 10);
-            seat = rowAndSeat % 10;
-            document.getElementById("header").innerText = `Ряд: ${row} Место: ${seat} Сумма: 500 руб.`
-        }
-
-        function confirmOrder() {
-            let userName = $('#username').val();
-            let userPhone = $('#phone').val();
-            let elements = document.forms[0].elements;
-            for (let i = 0; i < elements.length - 1; i++) {
-                 if ($(elements[i]).val() === '') {
-                     alert($(elements[i]).attr('title'));
-                 }
-             }
-            $.ajax({
-                type: 'POST',
-                url: 'http://localhost:8080/cinema/hall.do',
-                data: {
-                    name: userName,
-                    phone: userPhone,
-                    row: row,
-                    seat: seat
-                }
-            }).done(function () {
-                window.location.href = "http://localhost:8080/cinema/index.html";
-            }).fail(function (err) {
-                alert(err);
-            });
-        }
-    </script>
-
     <title>Подтверждение заказа</title>
 </head>
+<script>
+    let row;
+    let seat;
+    let rowAndSeat;
+
+    function loadingConfirmPaymentPage() {
+        rowAndSeat = window.location.href.split("?")[1].split("=")[1];
+        row = Math.trunc(rowAndSeat / 10);
+        seat = rowAndSeat % 10;
+        document.getElementById("header").innerText = `Ряд: ${row} Место: ${seat} Сумма: 500 руб.`
+    }
+
+    function confirmOrder() {
+        let userName = $('#username').val();
+        let userPhone = $('#phone').val();
+        let elements = document.forms[0].elements;
+        for (let i = 0; i < elements.length - 1; i++) {
+            if ($(elements[i]).val() === '') {
+                alert($(elements[i]).attr('title'));
+            }
+        }
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:8080/cinema/hall',
+            data: {
+                name: userName,
+                phone: userPhone,
+                row: row,
+                seat: seat
+            }
+        }).done(function () {
+            //window.location.href = "http://localhost:8080/cinema/index.html";
+        }).fail(function (err) {
+            console.log(err);
+        });
+    }
+</script>
 <body onload="loadingConfirmPaymentPage()">
 
 <div class="container">

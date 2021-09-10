@@ -7,6 +7,6 @@ import java.util.Collection;
 
 public interface Store {
     Collection<Integer> findAllTicket();
-    Ticket createTicket(Ticket ticket);
-    Account createAccount(Account account);
+    void saveTicket(Ticket ticket);
+    void saveAccount(Account account);
 }

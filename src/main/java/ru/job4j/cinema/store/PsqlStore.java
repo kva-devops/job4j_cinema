@@ -23,7 +23,8 @@ public class PsqlStore implements Store {
 
     private PsqlStore() {
         Properties cfg = new Properties();
-        try (BufferedReader io = new BufferedReader(new FileReader("db.properties")
+        try (BufferedReader io = new BufferedReader(
+                new FileReader("db.properties")
         )) {
             cfg.load(io);
         } catch (Exception e) {
@@ -58,54 +59,99 @@ public class PsqlStore implements Store {
                      "SELECT * FROM ticket")) {
             try (ResultSet it = ps.executeQuery()) {
                 while (it.next()) {
-                    tickets.add(it.getInt("row") + it.getInt("cell"));
+                    tickets.add(it.getInt("row") * 10 + it.getInt("cell"));
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error in FIND ALL TICKET method", e);
         }
         return tickets;
     }
 
     @Override
-    public Ticket createTicket(Ticket ticket) {
+    public void saveTicket(Ticket ticket) {
+        if (ticket.getId() == 0) {
+            create(ticket);
+        } else {
+            update(ticket);
+        }
+    }
+
+    private Ticket create(Ticket ticket) {
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement(
-                     "INSERT INTO ticket (sessionId, row, cell, accountId) VALUES (?, ?, ?, ?)",
+                     "INSERT INTO ticket (row, cell) VALUES (?, ?)",
                         PreparedStatement.RETURN_GENERATED_KEYS)) {
-            ps.setInt(1, ticket.getSessionId());
-            ps.setInt(2, ticket.getRow());
-            ps.setInt(3, ticket.getCell());
-            ps.setInt(4, ticket.getAccountId());
-
+            ps.setInt(1, ticket.getRow());
+            ps.setInt(2, ticket.getCell());
+            ps.execute();
             try (ResultSet id = ps.getGeneratedKeys()) {
                 if (id.next()) {
                     ticket.setId(id.getInt(1));
                 }
             }
+
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception in TICKET CREATE method.", e);
         }
         return ticket;
     }
 
-    @Override
-    public Account createAccount(Account account) {
+    private void update(Ticket ticket) {
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement(
-                     "INSERT INTO account (name, phone) VALUES (?, ?)",
+                     "UPDATE ticket SET row=?, cell=? WHERE id=?"
+             )) {
+                ps.setInt(1, ticket.getRow());
+                ps.setInt(2, ticket.getCell());
+                ps.setInt(3, ticket.getId());
+                ps.execute();
+        } catch (Exception e) {
+            LOG.error("Exception in TICKET UPDATE method.", e);
+        }
+    }
+
+    @Override
+    public void saveAccount(Account account) {
+        if (account.getId() == 0) {
+            create(account);
+        } else {
+            update(account);
+        }
+    }
+
+    private Account create(Account account) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps = cn.prepareStatement(
+                     "INSERT INTO account (username, phone) VALUES (?, ?)",
                         PreparedStatement.RETURN_GENERATED_KEYS
              )) {
                 ps.setString(1, account.getName());
                 ps.setString(2, account.getPhone());
+                ps.execute();
                 try (ResultSet id = ps.getGeneratedKeys()) {
                     if (id.next()) {
                         account.setId(id.getInt(1));
                     }
                 }
+
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Exception in ACCOUNT CREATE method.", e);
         }
         return account;
+    }
+
+    private void update(Account account) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps = cn.prepareStatement(
+                     "UPDATE account SET username=?, phone=? WHERE id=?"
+             )) {
+            ps.setString(1, account.getName());
+            ps.setString(2, account.getPhone());
+            ps.setInt(3, account.getId());
+            ps.execute();
+        } catch (Exception e) {
+            LOG.error("Exception in ACCOUNT UPDATE method.", e);
+        }
     }
 }

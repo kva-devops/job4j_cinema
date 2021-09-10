@@ -4,17 +4,15 @@ import java.util.Objects;
 
 public class Ticket {
     private int id;
-    private int sessionId;
     private int row;
     private int cell;
-    private int accountId;
 
-    public Ticket(int id, int sessionId, int row, int cell, int accountId) {
+    public Ticket(int id, int row, int cell) {
         this.id = id;
-        this.sessionId = sessionId;
+        //this.sessionId = sessionId;
         this.row = row;
         this.cell = cell;
-        this.accountId = accountId;
+        //this.accountId = accountId;
     }
 
     public int getId() {
@@ -23,14 +21,6 @@ public class Ticket {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(int sessionId) {
-        this.sessionId = sessionId;
     }
 
     public int getRow() {
@@ -49,13 +39,6 @@ public class Ticket {
         this.cell = cell;
     }
 
-    public int getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(int accountId) {
-        this.accountId = accountId;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -67,14 +50,12 @@ public class Ticket {
         }
         Ticket ticket = (Ticket) o;
         return id == ticket.id
-                && sessionId == ticket.sessionId
                 && row == ticket.row
-                && cell == ticket.cell
-                && accountId == ticket.accountId;
+                && cell == ticket.cell;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, sessionId, row, cell, accountId);
+        return Objects.hash(id, row, cell);
     }
 }
