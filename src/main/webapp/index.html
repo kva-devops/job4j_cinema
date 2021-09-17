@@ -21,7 +21,7 @@
         (() => setTimeout(update, 0))();
         (() => setInterval(update, 5000))();
         function update() {
-            $.get("http://localhost:8080/cinema/hall.do", function (responseJson) {
+            $.get("http://localhost:8080/cinema/hall", function (responseJson) {
                 $.each(responseJson, function (index, item) {
                     let element = $("#" + item);
                     element.closest('td').text("Место занято")

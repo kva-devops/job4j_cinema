@@ -17,36 +17,33 @@ import java.util.List;
 public class HallServlet extends HttpServlet {
     public final static Logger LOG = Logger.getLogger(HallServlet.class.getName());
 
-//    @Override
-//    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-//        List<Integer> list = new ArrayList<>(PsqlStore.instOf().findAllTicket());
-//        String json = new Gson().toJson(list);
-//        resp.setContentType("application/json");
-//        resp.setCharacterEncoding("UTF-8");
-//        PrintWriter out = new PrintWriter(resp.getOutputStream());
-//        out.println(json);
-//        out.flush();
-//    }
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        List<Integer> list = new ArrayList<>(PsqlStore.instOf().findAllTicket());
+        String json = new Gson().toJson(list);
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        PrintWriter out = new PrintWriter(resp.getOutputStream());
+        out.println(json);
+        out.flush();
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.setCharacterEncoding("UTF-8");
-//        String userName = req.getParameter("name");
-//        String userPhone = req.getParameter("phone");
-//        String row = req.getParameter("row");
-//        String seat = req.getParameter("seat");
-//        LOG.info(userName + " " + userPhone + " " + row + " " + seat);
         PsqlStore.instOf().saveAccount(
                 new Account(
                         0,
                         req.getParameter("name"),
                         req.getParameter("phone")));
+
+        int accountId = PsqlStore.instOf().findIdAccountByPhone(req.getParameter("phone"));
         PsqlStore.instOf().saveTicket(
                 new Ticket(
                         0,
                         Integer.parseInt(req.getParameter("row")),
-                        Integer.parseInt(req.getParameter("seat"))
+                        Integer.parseInt(req.getParameter("seat")),
+                        accountId
                         ));
-        resp.sendRedirect(req.getContextPath() + "/index.html");
     }
 }

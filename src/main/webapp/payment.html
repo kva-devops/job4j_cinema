@@ -46,7 +46,7 @@
                 seat: seat
             }
         }).done(function () {
-            //window.location.href = "http://localhost:8080/cinema/index.html";
+            return window.location.href = "http://localhost:8080/cinema/index.html";
         }).fail(function (err) {
             console.log(err);
         });
@@ -70,7 +70,7 @@
                 <label for="phone">Номер телефона</label>
                 <input type="text" class="form-control" id="phone" placeholder="Номер телефона" title="Введите номер телефона">
             </div>
-            <button type="button" class="btn btn-success" onclick="confirmOrder()">Оплатить</button>
+            <button type="button" class="btn btn-success" onclick="return confirmOrder()">Оплатить</button>
         </form>
     </div>
 </div>

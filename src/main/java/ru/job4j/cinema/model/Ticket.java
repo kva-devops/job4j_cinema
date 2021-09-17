@@ -6,13 +6,13 @@ public class Ticket {
     private int id;
     private int row;
     private int cell;
+    private int accountId;
 
-    public Ticket(int id, int row, int cell) {
+    public Ticket(int id, int row, int cell, int accountId) {
         this.id = id;
-        //this.sessionId = sessionId;
         this.row = row;
         this.cell = cell;
-        //this.accountId = accountId;
+        this.accountId = accountId;
     }
 
     public int getId() {
@@ -39,6 +39,13 @@ public class Ticket {
         this.cell = cell;
     }
 
+    public int getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(int accountId) {
+        this.accountId = accountId;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -51,11 +58,12 @@ public class Ticket {
         Ticket ticket = (Ticket) o;
         return id == ticket.id
                 && row == ticket.row
-                && cell == ticket.cell;
+                && cell == ticket.cell
+                && accountId == ticket.accountId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, row, cell);
+        return Objects.hash(id, row, cell, accountId);
     }
 }

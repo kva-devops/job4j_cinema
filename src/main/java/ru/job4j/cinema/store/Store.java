@@ -9,4 +9,5 @@ public interface Store {
     Collection<Integer> findAllTicket();
     void saveTicket(Ticket ticket);
     void saveAccount(Account account);
+    int findIdAccountByPhone(String phone);
 }

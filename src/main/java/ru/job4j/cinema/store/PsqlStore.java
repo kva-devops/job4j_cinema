@@ -80,10 +80,11 @@ public class PsqlStore implements Store {
     private Ticket create(Ticket ticket) {
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement(
-                     "INSERT INTO ticket (row, cell) VALUES (?, ?)",
+                     "INSERT INTO ticket (row, cell, account_id) VALUES (?, ?, ?)",
                         PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, ticket.getRow());
             ps.setInt(2, ticket.getCell());
+            ps.setInt(3, ticket.getAccountId());
             ps.execute();
             try (ResultSet id = ps.getGeneratedKeys()) {
                 if (id.next()) {
@@ -100,11 +101,13 @@ public class PsqlStore implements Store {
     private void update(Ticket ticket) {
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement(
-                     "UPDATE ticket SET row=?, cell=? WHERE id=?"
+                     "UPDATE ticket SET row=?, cell=?, account_id=? WHERE id=?"
              )) {
                 ps.setInt(1, ticket.getRow());
                 ps.setInt(2, ticket.getCell());
-                ps.setInt(3, ticket.getId());
+                ps.setInt(3, ticket.getAccountId());
+                ps.setInt(4, ticket.getId());
+
                 ps.execute();
         } catch (Exception e) {
             LOG.error("Exception in TICKET UPDATE method.", e);
@@ -153,5 +156,23 @@ public class PsqlStore implements Store {
         } catch (Exception e) {
             LOG.error("Exception in ACCOUNT UPDATE method.", e);
         }
+    }
+
+    public int findIdAccountByPhone(String phone) {
+        int result = 0;
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps = cn.prepareStatement(
+                     "SELECT * FROM account WHERE phone=?"
+             )) {
+            ps.setString(1, phone);
+            try (ResultSet it = ps.executeQuery()) {
+                if (it.next()) {
+                    result = it.getInt("id");
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Exception in FIND ID ACCOUNT BY PHONE.", e);
+        }
+        return result;
     }
 }
