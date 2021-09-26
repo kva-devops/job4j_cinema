@@ -10,4 +10,5 @@ public interface Store {
     void saveTicket(Ticket ticket);
     void saveAccount(Account account);
     int findIdAccountByPhone(String phone);
+    int checkFreePlace(int row, int seat);
 }

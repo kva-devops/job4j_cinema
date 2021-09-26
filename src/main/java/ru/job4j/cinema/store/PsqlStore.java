@@ -24,7 +24,7 @@ public class PsqlStore implements Store {
     private PsqlStore() {
         Properties cfg = new Properties();
         try (BufferedReader io = new BufferedReader(
-                new FileReader("db.properties")
+                new FileReader("db_cinema.properties")
         )) {
             cfg.load(io);
         } catch (Exception e) {
@@ -165,6 +165,26 @@ public class PsqlStore implements Store {
                      "SELECT * FROM account WHERE phone=?"
              )) {
             ps.setString(1, phone);
+            try (ResultSet it = ps.executeQuery()) {
+                if (it.next()) {
+                    result = it.getInt("id");
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Exception in FIND ID ACCOUNT BY PHONE.", e);
+        }
+        return result;
+    }
+
+    @Override
+    public int checkFreePlace(int row, int seat) {
+        int result = 0;
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps = cn.prepareStatement(
+                     "SELECT * FROM ticket WHERE row=? and seat=?"
+             )) {
+            ps.setInt(1, row);
+            ps.setInt(2, seat);
             try (ResultSet it = ps.executeQuery()) {
                 if (it.next()) {
                     result = it.getInt("id");

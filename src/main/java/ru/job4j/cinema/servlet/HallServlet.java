@@ -6,6 +6,7 @@ import ru.job4j.cinema.model.Account;
 import ru.job4j.cinema.model.Ticket;
 import ru.job4j.cinema.store.PsqlStore;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,7 +30,7 @@ public class HallServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         req.setCharacterEncoding("UTF-8");
         PsqlStore.instOf().saveAccount(
                 new Account(
@@ -38,12 +39,19 @@ public class HallServlet extends HttpServlet {
                         req.getParameter("phone")));
 
         int accountId = PsqlStore.instOf().findIdAccountByPhone(req.getParameter("phone"));
-        PsqlStore.instOf().saveTicket(
-                new Ticket(
-                        0,
-                        Integer.parseInt(req.getParameter("row")),
-                        Integer.parseInt(req.getParameter("seat")),
-                        accountId
-                        ));
+        int ticketCheck = PsqlStore.instOf().checkFreePlace(Integer.parseInt(req.getParameter("row")), Integer.parseInt(req.getParameter("seat")));
+        if (ticketCheck == 0) {
+            PsqlStore.instOf().saveTicket(
+                    new Ticket(
+                            0,
+                            Integer.parseInt(req.getParameter("row")),
+                            Integer.parseInt(req.getParameter("seat")),
+                            accountId
+                    ));
+        } else {
+            req.setAttribute("error", "This seat is taken");
+            req.getRequestDispatcher("login.html").forward(req, resp);
+        }
+
     }
 }

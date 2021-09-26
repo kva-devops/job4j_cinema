@@ -1,7 +1,7 @@
 CREATE TABLE account (
     id SERIAL PRIMARY KEY,
     username VARCHAR NOT NULL,
-    phone VARCHAR NOT NULL UNIQUE
+    phone VARCHAR NOT NULL
 );
 
 CREATE TABLE ticket (
