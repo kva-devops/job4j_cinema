@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,18 +40,19 @@ public class HallServlet extends HttpServlet {
                         req.getParameter("phone")));
 
         int accountId = PsqlStore.instOf().findIdAccountByPhone(req.getParameter("phone"));
-        int ticketCheck = PsqlStore.instOf().checkFreePlace(Integer.parseInt(req.getParameter("row")), Integer.parseInt(req.getParameter("seat")));
-        if (ticketCheck == 0) {
-            PsqlStore.instOf().saveTicket(
-                    new Ticket(
-                            0,
-                            Integer.parseInt(req.getParameter("row")),
-                            Integer.parseInt(req.getParameter("seat")),
-                            accountId
-                    ));
-        } else {
-            req.setAttribute("error", "This seat is taken");
-            req.getRequestDispatcher("login.html").forward(req, resp);
+        try {
+            boolean rsl = PsqlStore.instOf().saveTicket(
+                        new Ticket(
+                                0,
+                                Integer.parseInt(req.getParameter("row")),
+                                Integer.parseInt(req.getParameter("seat")),
+                                accountId
+                        ));
+            if (!rsl) {
+                resp.sendRedirect(req.getContextPath() + "/cinema/index.html");
+            }
+        } catch (SQLException throwables) {
+            LOG.info("Exception doPost Servlet HallServlet");
         }
 
     }

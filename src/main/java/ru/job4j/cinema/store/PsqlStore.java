@@ -1,6 +1,7 @@
 package ru.job4j.cinema.store;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.job4j.cinema.model.Account;
@@ -11,6 +12,7 @@ import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Properties;
@@ -69,15 +71,20 @@ public class PsqlStore implements Store {
     }
 
     @Override
-    public void saveTicket(Ticket ticket) {
+    public synchronized boolean saveTicket(Ticket ticket) throws SQLException {
         if (ticket.getId() == 0) {
-            create(ticket);
+            Ticket buff = create(ticket);
+            if (buff == null) {
+                return false;
+            }
+            return true;
         } else {
             update(ticket);
         }
+        return false;
     }
 
-    private Ticket create(Ticket ticket) {
+    private Ticket create(Ticket ticket) throws SQLException {
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement(
                      "INSERT INTO ticket (row, cell, account_id) VALUES (?, ?, ?)",
@@ -91,9 +98,8 @@ public class PsqlStore implements Store {
                     ticket.setId(id.getInt(1));
                 }
             }
-
-        } catch (Exception e) {
-            LOG.error("Exception in TICKET CREATE method.", e);
+        } catch (PSQLException e) {
+            return null;
         }
         return ticket;
     }
@@ -115,7 +121,7 @@ public class PsqlStore implements Store {
     }
 
     @Override
-    public void saveAccount(Account account) {
+    public synchronized void saveAccount(Account account) {
         if (account.getId() == 0) {
             create(account);
         } else {

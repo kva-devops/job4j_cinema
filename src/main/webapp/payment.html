@@ -31,6 +31,9 @@
         let userName = $('#username').val();
         let userPhone = $('#phone').val();
         let elements = document.forms[0].elements;
+        let url = "http://" + window.location.host + "/cinema/hall";
+        let urlReturn = "http://" + window.location.host + "/cinema/index.html";
+        let urlError = "http://" + window.location.host + "/cinema/error.html";
         for (let i = 0; i < elements.length - 1; i++) {
             if ($(elements[i]).val() === '') {
                 alert($(elements[i]).attr('title'));
@@ -38,7 +41,7 @@
         }
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:8080/cinema/hall',
+            url: url,
             data: {
                 name: userName,
                 phone: userPhone,
@@ -46,11 +49,12 @@
                 seat: seat
             }
         }).done(function () {
-            return window.location.href = "http://localhost:8080/cinema/index.html";
-        }).fail(function (err) {
-            console.log(err);
+            return window.location.href = urlReturn;
+        }).fail(function () {
+            return window.location.href = urlError;
         });
     }
+
 </script>
 <body onload="loadingConfirmPaymentPage()">
 
