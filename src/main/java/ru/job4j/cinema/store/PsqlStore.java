@@ -71,7 +71,7 @@ public class PsqlStore implements Store {
     }
 
     @Override
-    public synchronized boolean saveTicket(Ticket ticket) throws SQLException {
+    public boolean saveTicket(Ticket ticket) throws SQLException {
         if (ticket.getId() == 0) {
             Ticket buff = create(ticket);
             if (buff == null) {
@@ -121,7 +121,7 @@ public class PsqlStore implements Store {
     }
 
     @Override
-    public synchronized void saveAccount(Account account) {
+    public void saveAccount(Account account) {
         if (account.getId() == 0) {
             create(account);
         } else {
