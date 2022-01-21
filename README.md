@@ -1,4 +1,5 @@
 # Приложение "Cinema"
+[![Build Status](https://app.travis-ci.com/kva-devops/job4j_cinema.svg?branch=master)](https://app.travis-ci.com/kva-devops/job4j_cinema)
 
 ## О проекте
 #### Описание
